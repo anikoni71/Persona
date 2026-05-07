@@ -50,49 +50,21 @@ const COLORS = ['#c00000', '#8b0000', '#ef4444', '#fca5a5', '#7f1d1d'];
 import { useState } from 'react';
 
 const FALLBACK_IMAGES = {
-  cover: "https://images.unsplash.com/photo-1542038784456-1ea8e935640e?auto=format&fit=crop&q=80&w=1200&h=500"
+  // cover: "https://images.unsplash.com/photo-1542038784456-1ea8e935640e?auto=format&fit=crop&q=80&w=1200&h=500"
 };
 
-function ImgWithFallback({ src, fallback, alt, className, disableMissingUI = false }: { src: string, fallback?: string, alt: string, className?: string, disableMissingUI?: boolean }) {
+function ImgWithFallback({ src, fallback, alt, className }: { src: string, fallback?: string, alt: string, className?: string }) {
   const [error, setError] = useState(false);
-  const [localUrl, setLocalUrl] = useState<string | null>(null);
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      setLocalUrl(URL.createObjectURL(e.target.files[0]));
-      setError(false);
-    }
-  };
-
-  const currentSrc = localUrl || (error && fallback ? fallback : src);
-  const isActuallyMissing = error && !fallback && !localUrl;
 
   return (
-    <>
-      <img 
-        src={currentSrc} 
-        alt={alt} 
-        className={cn(className, isActuallyMissing && disableMissingUI ? 'hidden' : '')} 
-        onError={() => {
-          if (!error) setError(true);
-        }} 
-      />
-      {isActuallyMissing && !disableMissingUI && (
-        <div className="absolute inset-0 flex flex-col items-center justify-center bg-red-50 border border-dashed border-red-300 text-red-800 p-2 text-center cursor-pointer hover:bg-red-100 transition-colors z-20 overflow-hidden m-2 rounded">
-           <Upload className="w-8 h-8 mb-1 opacity-80 text-red-600" />
-           <span className="text-sm font-bold leading-tight">Upload {alt}</span>
-           <span className="text-xs opacity-80 mt-1 hidden sm:block">Click here</span>
-           <input title="Upload image" type="file" accept="image/*" className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" onChange={handleFileChange} />
-        </div>
-      )}
-      {(!isActuallyMissing || disableMissingUI) && (
-         <div className="absolute inset-0 opacity-0 hover:opacity-100 bg-black/60 text-white flex flex-col items-center justify-center transition-all duration-300 cursor-pointer z-50 print:hidden m-2 rounded backdrop-blur-sm shadow-xl">
-           <Upload className="w-8 h-8 mb-2 text-white shadow-sm" />
-           <span className="font-bold text-sm text-center px-4 tracking-wide leading-tight">Replace Image</span>
-           <input title="Replace image" type="file" accept="image/*" className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" onChange={handleFileChange} />
-         </div>
-      )}
-    </>
+    <img 
+      src={error && fallback ? fallback : src} 
+      alt={alt} 
+      className={className} 
+      onError={() => {
+        if (!error && fallback) setError(true);
+      }} 
+    />
   );
 }
 
@@ -103,7 +75,6 @@ function PersonaLogo({ className, hideSubtitle = false }: { className?: string, 
         src="/persona-logo.png" 
         alt="Persona Logo" 
         className="w-32 md:w-48 h-auto object-contain hidden" // Hidden by default if real logo absent
-        disableMissingUI={true}
       />
       <span className="font-script text-4xl md:text-5xl lg:text-6xl text-[#c00000] drop-shadow-sm -mb-2">Persona&reg;</span>
       {!hideSubtitle && <span className="text-gray-500 text-[10px] md:text-xs tracking-widest font-sans ml-2">where beauty has a new name</span>}
@@ -116,9 +87,10 @@ export default function App() {
     <div className="min-h-screen bg-[#eef2f7] text-[#1f2937] font-sans">
       
       {/* Cover Page */}
-      <section className="min-h-[80vh] print:min-h-0 bg-white flex flex-col justify-center py-12 px-8 overflow-hidden relative border-b-8 border-[#8b0000] print:border-none print:py-0 print:mb-8">
-        {/* Top Right Logo */}
-        <div className="max-w-7xl mx-auto w-full flex justify-end mb-4 print:hidden z-10 relative">
+      <section className="min-h-[80vh] print:min-h-0 bg-white flex flex-col justify-center py-16 px-8 overflow-hidden relative border-b-8 border-[#8b0000] print:border-none print:py-0 print:mb-8">
+        
+        {/* Top Right Logo - Absolute Positioned */}
+        <div className="absolute top-4 right-6 md:top-8 md:right-12 print:hidden z-20">
           <PersonaLogo className="scale-75 md:scale-90 origin-right" hideSubtitle={false} />
         </div>
 
